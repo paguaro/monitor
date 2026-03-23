@@ -32,10 +32,13 @@ VARIABLES = [
 
 PAST_DAYS     = 16
 FORECAST_DAYS = 16
+TIMEOUT_SEC   = 60   # increased — Open-Meteo can be slow
+RETRY_DELAY   = 15   # seconds between retries
+MAX_RETRIES   = 4    # one extra retry vs original
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
-def fetch_station(station: dict, retries: int = 3) -> dict:
+def fetch_station(station: dict, retries: int = MAX_RETRIES) -> dict:
     """Call Open-Meteo API for one station with retry logic."""
     params = {
         "latitude":        station["lat"],
@@ -48,17 +51,18 @@ def fetch_station(station: dict, retries: int = 3) -> dict:
     }
     for attempt in range(retries):
         try:
-            r = requests.get(BASE_URL, params=params, timeout=30)
+            r = requests.get(BASE_URL, params=params, timeout=TIMEOUT_SEC)
             r.raise_for_status()
             return r.json()
         except Exception as e:
-            print(f"    Attempt {attempt + 1} failed: {e}")
+            print(f"    Attempt {attempt + 1}/{retries} failed: {e}")
             if attempt < retries - 1:
-                time.sleep(5)
+                print(f"    Waiting {RETRY_DELAY}s before retry...")
+                time.sleep(RETRY_DELAY)
     raise RuntimeError(f"Failed to fetch {station['name']} after {retries} attempts")
 
 
-def split_obs_fct(hourly: dict) -> tuple[dict, dict]:
+def split_obs_fct(hourly: dict) -> tuple:
     """Split hourly dict into observed (past) and forecast (future) slices."""
     now_str = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H")
     obs_idx = [i for i, t in enumerate(hourly["time"]) if t[:13] <= now_str]
@@ -103,16 +107,19 @@ def fetch_all(stations_path: str = "config/stations.json") -> None:
 
             print(f"    ✓ {len(obs['time'])} obs + {len(fct['time'])} fct hours saved")
             success += 1
-            time.sleep(0.5)   # be polite to the API
+            time.sleep(1)   # polite pause between stations
 
         except Exception as e:
             print(f"    ✗ ERROR: {e}")
             failed.append(st["name"])
 
-    print(f"\n  Done: {success} OK, {len(failed)} failed")
+    print(f"\n  Done: {success}/{len(cfg['stations'])} stations OK")
     if failed:
-        print(f"  Failed stations: {', '.join(failed)}")
-        raise SystemExit(1)
+        print(f"  ⚠ Failed stations: {', '.join(failed)}")
+        print(f"  These stations will be skipped in skill/alpha computation.")
+        # Do NOT raise SystemExit — workflow continues with partial data
+    else:
+        print("  ✅ All stations fetched successfully")
 
 
 if __name__ == "__main__":
