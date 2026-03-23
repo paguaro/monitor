@@ -1,0 +1,9 @@
+week,station_id,station_name,country,alpha_obs,alpha_fct,alpha_error,dom_regime_obs,dom_regime_fct,dom_pct_obs,dom_pct_fct,avg_run_obs,avg_run_fct,max_run_obs,max_run_fct,changes_day_obs,changes_day_fct,n_hours_obs,n_hours_fct,alpha_cli,alpha_residual
+2026-03-23,braganca,Bragança,PT,0.314,0.504,0.19,W/SW,NE/E,47.7,60.1,5.2,8.5,71,80,4.59,2.74,392,376,0.44,-0.126
+2026-03-23,cagliari,Cagliari,IT,0.305,0.484,0.179,N/NW,N/NW,41.3,50.5,6.1,9.4,19,38,3.86,2.49,392,376,0.42,-0.115
+2026-03-23,castelo_branco,Castelo Branco,PT,0.336,0.507,0.171,N/NW,N/NW,34.2,55.1,7.5,9.4,43,53,3.12,2.49,392,376,0.4,-0.064
+2026-03-23,coimbra,Coimbra,PT,0.25,0.331,0.081,NE/E,NE/E,35.7,42.8,4.9,6.5,31,53,4.84,3.64,392,376,0.41,-0.16
+2026-03-23,evora,Évora,PT,0.423,0.519,0.096,N/NW,N/NW,41.6,52.9,8.9,10.2,32,53,2.63,2.3,392,376,0.46,-0.037
+2026-03-23,faro,Faro,PT,0.273,0.302,0.029,NE/E,N/NW,36.0,33.5,6.0,6.8,34,52,3.92,3.45,392,376,0.43,-0.157
+2026-03-23,nuoro,Nuoro,IT,0.287,0.723,0.436,NE/E,W/SW,41.6,74.7,5.4,13.9,46,64,4.35,1.66,392,376,0.36,-0.073
+2026-03-23,sassari,Sassari,IT,0.354,0.35,-0.004,NE/E,W/SW,55.9,34.6,5.1,7.8,35,42,4.65,3.0,392,376,0.39,-0.036

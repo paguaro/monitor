@@ -2,31 +2,178 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Meteo Skill Monitor</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meteo Skill Monitor · PT + Sardegna</title>
 <style>
-  body{font-family:system-ui;max-width:600px;margin:80px auto;text-align:center;color:#374151}
-  h1{color:#e85d2f;font-size:28px}
-  p{color:#6b7280;margin:12px 0;line-height:1.7}
-  .badge{display:inline-block;background:#f3f4f6;border:1px solid #e5e7eb;
-         border-radius:8px;padding:10px 20px;font-family:monospace;font-size:13px;
-         color:#374151;margin-top:20px}
+  :root{--accent:#e85d2f;--border:#e5e7eb;--dim:#9ca3af;--surface:#f9fafb}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#f0f2f5;
+        color:#111827;padding:24px;max-width:1200px;margin:0 auto}
+  h1{font-size:20px;font-weight:700;color:var(--accent);
+      border-bottom:3px solid var(--accent);padding-bottom:10px;margin-bottom:6px}
+  h2{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;
+      letter-spacing:.08em;margin:24px 0 10px}
+  .meta{font-size:11px;color:var(--dim);margin-bottom:20px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:8px;
+         padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;font-family:monospace}
+  th{background:var(--surface);color:var(--dim);padding:6px 10px;
+      text-align:left;border-bottom:2px solid var(--border);
+      font-size:9px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+  td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+  tr:hover td{background:#fff7ed}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;color:#4b5563;
+            margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+  .leg-item{display:flex;align-items:center;gap:5px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .stat-mini{background:#fff;border:1px solid var(--border);border-radius:6px;
+              padding:10px 14px;text-align:center}
+  .sv{font-size:22px;font-weight:700;font-family:monospace;color:var(--accent)}
+  .sl{font-size:9px;color:var(--dim);text-transform:uppercase;margin-top:3px}
 </style>
 </head>
 <body>
-  <h1>🌬 Meteo Skill Monitor</h1>
-  <p>
-    Weekly quality control of Open-Meteo wind forecasts<br>
-    for <b>5 stations in Portugal</b> and <b>3 stations in Sardegna</b>.
-  </p>
-  <p>
-    The first report will be generated after the<br>
-    <b>first automated Monday run</b> or a manual workflow trigger.
-  </p>
-  <div class="badge">
-    Go to <b>Actions</b> tab → <b>Weekly Meteo Skill Analysis</b> → <b>Run workflow</b>
+
+<h1>🌬 Meteo Skill Monitor</h1>
+<p class="meta">
+  Generated: 2026-03-23 07:35 UTC &nbsp;·&nbsp;
+  Stations: 5 Portugal + 3 Sardegna &nbsp;·&nbsp;
+  Source: Open-Meteo IFS forecast vs ERA5-NRT observed &nbsp;·&nbsp;
+  History: 0 weeks
+</p>
+
+<!-- Summary stats bar -->
+<div class="stats-bar">
+  <div class="stat-mini">
+    <div class="sv">0</div>
+    <div class="sl">Stations this week</div>
   </div>
-  <p style="margin-top:30px;font-size:12px;color:#9ca3af">
-    Data: Open-Meteo IFS forecast vs ERA5-NRT observed · α stability index
-  </p>
+  <div class="stat-mini">
+    <div class="sv">—</div>
+    <div class="sl">Latest week</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv">0</div>
+    <div class="sl">Weeks collected</div>
+  </div>
+  <div class="stat-mini">
+    <div class="sv">0</div>
+    <div class="sl">Hour pairs compared</div>
+  </div>
+</div>
+
+<!-- Skill metrics table -->
+<div class="card">
+  <h2>Forecast Skill · Week —</h2>
+  <table>
+    <thead><tr>
+      <th>Station</th>
+      <th>Country</th>
+      <th>RMSE Wind</th>
+      <th>Bias Wind</th>
+      <th>RMSE Gust</th>
+      <th>MAE Dir</th>
+      <th>Regime HR</th>
+      <th>α observed</th>
+      <th>α forecast</th>
+      <th>α error</th>
+      <th>Dom. regime</th>
+      <th>Avg run</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="legend">
+    <div class="leg-item"><span class="dot" style="background:#15803d"></span> RMSE &lt;2 excellent</div>
+    <div class="leg-item"><span class="dot" style="background:#d97706"></span> RMSE 2–4 acceptable</div>
+    <div class="leg-item"><span class="dot" style="background:#dc2626"></span> RMSE &gt;4 poor</div>
+    <div class="leg-item"><span class="dot" style="background:#1d4ed8"></span> Bias negative (underforecast)</div>
+    <div class="leg-item"><span class="dot" style="background:#dc2626"></span> Bias positive (overforecast)</div>
+  </div>
+</div>
+
+<!-- Alpha trend table -->
+<div class="card">
+  <h2>α Stability Index · 8-week trend</h2>
+  <table>
+    <thead><tr>
+      <th>Station</th>
+      <th>Trend (obs)</th>
+      <th>Latest α</th>
+      <th>Weeks</th>
+    </tr></thead>
+    <tbody>
+        <tr>
+          <td><span style="color:#e85d2f;font-weight:700">●</span> Bragança</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.31 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#1d4ed8;font-weight:700">●</span> Cagliari</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.30 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#15803d;font-weight:700">●</span> Castelo Branco</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.34 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#7c3aed;font-weight:700">●</span> Coimbra</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.25 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#0891b2;font-weight:700">●</span> Évora</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fef3c7;color:#d97706;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.42 Moderate</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#d97706;font-weight:700">●</span> Faro</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.27 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#dc2626;font-weight:700">●</span> Nuoro</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.29 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr>
+        <tr>
+          <td><span style="color:#374151;font-weight:700">●</span> Sassari</td>
+          <td style="text-align:center"><span style='color:#9ca3af;font-size:10px'>insufficient data</span></td>
+          <td><span style="background:#fee2e2;color:#dc2626;padding:2px 6px;border-radius:8px;
+               font-size:9px;font-weight:700">0.35 Variable</span></td>
+          <td style="color:#9ca3af;font-size:10px">03-23</td>
+        </tr></tbody>
+  </table>
+  <div class="legend">
+    <div class="leg-item"><span class="dot" style="background:#15803d"></span> α ≥ 0.55 Stable (single regime dominates)</div>
+    <div class="leg-item"><span class="dot" style="background:#d97706"></span> α 0.38–0.55 Moderate (regime transitions)</div>
+    <div class="leg-item"><span class="dot" style="background:#dc2626"></span> α &lt; 0.38 Variable (chaotic, multiple regimes)</div>
+  </div>
+</div>
+
+<!-- Data links -->
+<p style="font-size:11px;color:var(--dim);margin-top:10px">
+  Raw data:
+  <a href="../data/skill/skill_cumulative.csv" style="color:var(--accent)">skill_cumulative.csv</a> ·
+  <a href="../data/skill/alpha_weekly.csv"    style="color:var(--accent)">alpha_weekly.csv</a>
+</p>
+
 </body>
 </html>
