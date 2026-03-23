@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Meteo Skill Monitor</title>
+<style>
+  body{font-family:system-ui;max-width:600px;margin:80px auto;text-align:center;color:#374151}
+  h1{color:#e85d2f;font-size:28px}
+  p{color:#6b7280;margin:12px 0;line-height:1.7}
+  .badge{display:inline-block;background:#f3f4f6;border:1px solid #e5e7eb;
+         border-radius:8px;padding:10px 20px;font-family:monospace;font-size:13px;
+         color:#374151;margin-top:20px}
+</style>
+</head>
+<body>
+  <h1>🌬 Meteo Skill Monitor</h1>
+  <p>
+    Weekly quality control of Open-Meteo wind forecasts<br>
+    for <b>5 stations in Portugal</b> and <b>3 stations in Sardegna</b>.
+  </p>
+  <p>
+    The first report will be generated after the<br>
+    <b>first automated Monday run</b> or a manual workflow trigger.
+  </p>
+  <div class="badge">
+    Go to <b>Actions</b> tab → <b>Weekly Meteo Skill Analysis</b> → <b>Run workflow</b>
+  </div>
+  <p style="margin-top:30px;font-size:12px;color:#9ca3af">
+    Data: Open-Meteo IFS forecast vs ERA5-NRT observed · α stability index
+  </p>
+</body>
+</html>
