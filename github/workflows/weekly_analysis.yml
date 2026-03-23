@@ -1,0 +1,93 @@
+name: Weekly Meteo Skill Analysis
+
+on:
+  schedule:
+    # Every Monday at 06:00 UTC
+    # Portugal / Sardegna are UTC+0 (winter) or UTC+1 (summer)
+    # 06:00 UTC = 06:00–07:00 local — data assimilation complete
+    - cron: '0 6 * * 1'
+
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run (optional)'
+        required: false
+        default: 'manual test'
+
+jobs:
+  analyze:
+    name: Download · Compute · Report
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # needed to commit results back to repo
+
+    steps:
+
+      # ── 1. Checkout ──────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so git log works
+
+      # ── 2. Python ────────────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install requests numpy
+
+      # ── 3. Create output directories ─────────────────────────────────────
+      - name: Create directories
+        run: |
+          mkdir -p data/forecasts data/skill reports
+
+      # ── 4. Fetch data ─────────────────────────────────────────────────────
+      - name: Fetch Open-Meteo data (8 stations)
+        run: python scripts/fetch_data.py
+
+      # ── 5. Compute skill ──────────────────────────────────────────────────
+      - name: Compute forecast skill vs observed
+        run: python scripts/compute_skill.py
+
+      # ── 6. Compute alpha ──────────────────────────────────────────────────
+      - name: Compute alpha stability index
+        run: python scripts/compute_alpha.py
+
+      # ── 7. Generate HTML report ───────────────────────────────────────────
+      - name: Generate HTML report
+        run: python scripts/generate_report.py
+
+      # ── 8. Commit and push ────────────────────────────────────────────────
+      - name: Commit results
+        run: |
+          git config user.name  "meteo-skill-bot"
+          git config user.email "meteo-skill-bot@users.noreply.github.com"
+
+          git add data/ reports/
+
+          # Only commit if there are actual changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            WEEK=$(date -u +%Y-%m-%d)
+            git commit -m "Weekly analysis ${WEEK} — 8 stations PT+IT"
+            git push
+            echo "Committed and pushed successfully"
+          fi
+
+      # ── 9. Summary ────────────────────────────────────────────────────────
+      - name: Print run summary
+        if: always()
+        run: |
+          echo "=== Run summary ==="
+          echo "Date: $(date -u)"
+          echo "Skill CSV rows: $(wc -l < data/skill/skill_cumulative.csv 2>/dev/null || echo 'not found')"
+          echo "Alpha CSV rows: $(wc -l < data/skill/alpha_weekly.csv     2>/dev/null || echo 'not found')"
+          echo "Forecast dirs:  $(ls data/forecasts/ 2>/dev/null | wc -l)"
